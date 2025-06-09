@@ -16,7 +16,7 @@ import { Hexgrid } from './marks/Hexgrid.js';
 import { Image } from './marks/Image.js';
 import { Line, LineX, LineY } from './marks/Line.js';
 import { Link } from './marks/Link.js';
-import { Heatmap, Raster, RasterTile } from './marks/Raster.js';
+import { Heatmap, Raster, RasterTile, RasterPyramid } from './marks/Raster.js';
 import { Rect, RectX, RectY } from './marks/Rect.js';
 import { RegressionY } from './marks/Regression.js';
 import { RuleX, RuleY } from './marks/Rule.js';
@@ -45,7 +45,7 @@ export type PlotMark =
   | Image
   | Line | LineX | LineY
   | Link
-  | Raster | Heatmap | RasterTile
+  | Raster | Heatmap | RasterTile | RasterPyramid
   | Rect | RectX | RectY
   | RegressionY
   | RuleX | RuleY

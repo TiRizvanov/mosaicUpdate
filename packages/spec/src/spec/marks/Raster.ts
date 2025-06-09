@@ -143,3 +143,18 @@ export interface RasterTile extends MarkData, RasterOptions {
    */
   origin?: [number, number] | ParamRef;
 }
+
+/** The rasterPyramid mark. */
+export interface RasterPyramid extends MarkData, RasterOptions {
+  /**
+   * A raster mark that automatically switches between multiple
+   * precomputed resolution levels during zooming and panning.
+   */
+  mark: 'rasterPyramid';
+
+  /**
+   * Zoom level scale factors used to determine raster resolutions.
+   * Larger values correspond to finer detail.
+   */
+  levels?: number[] | ParamRef;
+}
