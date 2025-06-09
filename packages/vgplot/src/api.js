@@ -318,7 +318,7 @@ export {
   tickX, tickY,
   ruleX, ruleY,
   density, densityX, densityY, denseLine,
-  raster, rasterTile, heatmap,
+  raster, rasterTile, rasterPyramid, heatmap,
   contour,
   hexbin, hexgrid,
   regressionY,

@@ -14,6 +14,7 @@ export { Grid2DMark } from './marks/Grid2DMark.js';
 export { HexbinMark } from './marks/HexbinMark.js';
 export { RasterMark, HeatmapMark } from './marks/RasterMark.js';
 export { RasterTileMark } from './marks/RasterTileMark.js';
+export { RasterPyramidMark } from './marks/RasterPyramidMark.js';
 export { RegressionMark } from './marks/RegressionMark.js';
 
 // interactors
