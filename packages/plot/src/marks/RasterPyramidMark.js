@@ -3,11 +3,12 @@ import { extentX, extentY } from './util/extent.js';
 
 export class RasterPyramidMark extends RasterTileMark {
   constructor(source, options = {}) {
-    const { levels = [1, 2, 4, 8], pixelSize = 1, ...rest } = options;
+    const { levels, pixelSize = 1, ...rest } = options;
     super(source, { pixelSize, ...rest });
     this.basePixelSize = pixelSize;
-    this.levels = levels;
-    this._levelIndex = 0;
+    // if levels are not specified, generate 100 increasing levels
+    this.levels = levels ?? Array.from({ length: 100 }, (_, i) => i + 1);
+    this._levelIndex = -1;
     this.pixelSizeCurrent = pixelSize;
     this._initExtent = null;
   }
@@ -37,7 +38,12 @@ export class RasterPyramidMark extends RasterTileMark {
     const [x0, x1] = extentX(this, this._filter);
     const [y0, y1] = extentY(this, this._filter);
     const level = this.currentLevel(x1 - x0, y1 - y0);
-    this._levelIndex = level;
+    if (level !== this._levelIndex) {
+      this._levelIndex = level;
+      // clear cached tiles when resolution level changes
+      this.tileCache.clear();
+      this._precomputed = false;
+    }
     this.pixelSizeCurrent = this.basePixelSize / this.levels[level];
     this.pixelSize = this.pixelSizeCurrent;
     return super.requestTiles();
