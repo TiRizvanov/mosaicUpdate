@@ -2,7 +2,7 @@ import { beforeEach, afterEach, describe, it, expect } from 'vitest';
 import { JSDOM } from 'jsdom';
 import { RasterTileMark } from '../src/marks/RasterTileMark.js';
 import { Plot } from '../src/plot.js';
-import { coordinator, Coordinator } from '@uwdata/mosaic-core';
+import { coordinator } from '@uwdata/mosaic-core';
 
 function fakeTable() {
   return {
@@ -16,6 +16,7 @@ function fakeTable() {
 describe('RasterTileMark', () => {
   let dom;
   let prev;
+  let callCount;
 
   beforeEach(() => {
     dom = new JSDOM(`<!DOCTYPE html><body></body>`, { pretendToBeVisual: true });
@@ -24,8 +25,9 @@ describe('RasterTileMark', () => {
     globalThis.requestAnimationFrame = window.requestAnimationFrame;
 
     prev = coordinator();
+    callCount = 0;
     coordinator({
-      query: async () => fakeTable(),
+      query: async () => { callCount++; return fakeTable(); },
       prefetch: async () => null,
       cancel: () => {}
     });
@@ -51,5 +53,7 @@ describe('RasterTileMark', () => {
     await mark.requestTiles();
 
     expect(mark.grids0.numRows).toBe(1);
+    expect(callCount).toBeGreaterThan(0);
+    expect(mark.tileCache.size).toBeGreaterThan(0);
   });
 });
