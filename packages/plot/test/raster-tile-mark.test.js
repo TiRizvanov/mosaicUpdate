@@ -1,5 +1,3 @@
-// Tests for raster tile mark
-
 import { beforeEach, afterEach, describe, it, expect } from 'vitest';
 import { JSDOM } from 'jsdom';
 import { RasterTileMark } from '../src/marks/RasterTileMark.js';
@@ -18,23 +16,23 @@ function fakeTable() {
 describe('RasterTileMark', () => {
   let dom;
   let prev;
-  let callCount;
+let callCount;
 
-  beforeEach(() => {
-    dom = new JSDOM(`<!DOCTYPE html><body></body>`, { pretendToBeVisual: true });
+beforeEach(() => {
+  dom = new JSDOM(`<!DOCTYPE html><body></body>`, { pretendToBeVisual: true });
     globalThis.window = dom.window;
     globalThis.document = dom.window.document;
     globalThis.requestAnimationFrame = window.requestAnimationFrame;
 
-    prev = coordinator();
-    callCount = 0;
-    coordinator({
-      query: async () => { callCount++; return fakeTable(); },
-      prefetch: async () => null,
-      cancel: () => {}
-    });
+     prev = coordinator();
+  callCount = 0;
+  coordinator({
+    query: async () => { callCount++; return fakeTable(); },
+    prefetch: async () => null,
+    cancel: () => {}
   });
-
+});
+  
   afterEach(() => {
     delete globalThis.requestAnimationFrame;
     delete globalThis.document;
@@ -57,5 +55,7 @@ describe('RasterTileMark', () => {
     expect(mark.grids0.numRows).toBe(1);
     expect(callCount).toBeGreaterThan(0);
     expect(mark.tileCache.size).toBeGreaterThan(0);
+
+
   });
 });
