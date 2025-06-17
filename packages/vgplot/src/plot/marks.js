@@ -83,7 +83,7 @@ export const tickX = (...args) => mark('tickX', ...args);
 export const tickY = (...args) => mark('tickY', ...args);
 
 export const vector = (...args) => mark('vector', ...args);
-export const vectorX = (...args) => mark('vectoX', ...args);
+export const vectorX = (...args) => mark('vectorX', ...args);
 export const vectorY = (...args) => mark('vectorY', ...args);
 export const spike = (...args) => mark('spike', ...args);
 
