@@ -158,8 +158,12 @@ export class RasterTileMark extends Grid2DMark {
     // wait for tile queries to complete, then update
     const tiles = await Promise.all(queries);
     const density = processTiles(m, n, xx, yy, coords, tiles);
+    // numRows should reflect the number of raster groups. Currently
+    // raster tiles do not support grouping, so we default to one group.
+    // If grouping is added in the future, update this logic to use the
+    // actual group count of the returned tiles.
     this.grids0 = {
-      numRows: density.length,
+      numRows: 1,
       columns: { density: [density] }
     };
     this.convolve().update();
