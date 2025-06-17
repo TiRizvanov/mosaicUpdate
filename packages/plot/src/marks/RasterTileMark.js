@@ -12,6 +12,8 @@ export class RasterTileMark extends Grid2DMark {
     const { origin = [0, 0], dim = 'xy', ...markOptions } = options;
     super('image', source, markOptions);
     this.image = null;
+    this.tileCache = new Map();
+    this._precomputed = new Set();
 
     // TODO: make part of data source instead of options?
     this.origin = origin;
@@ -98,14 +100,55 @@ export class RasterTileMark extends Grid2DMark {
     }
   }
 
+  async precomputeAllTiles(bins = this.binDimensions()) {
+    const key = bins.join('x');
+    if (this._precomputed.has(key)) return;
+
+    const mc = coordinator();
+    const { tileX, tileY, origin: [tx, ty] } = this;
+    const [m, n] = bins;
+
+    const [x0, x1] = extentX(this, []);
+    const [y0, y1] = extentY(this, []);
+
+    const xspan = x1 - x0;
+    const yspan = y1 - y0;
+
+    const tileExtent = (i, j) => [
+      [tx + i * xspan, tx + (i + 1) * xspan],
+      [ty + j * yspan, ty + (j + 1) * yspan]
+    ];
+
+    const i0 = Math.floor((x0 - tx) / xspan);
+    const i1 = tileX ? tileFloor((x1 - tx) / xspan) : i0;
+    const j0 = Math.floor((y0 - ty) / yspan);
+    const j1 = tileY ? tileFloor((y1 - ty) / yspan) : j0;
+
+    const coords = [];
+    for (let i = i0; i <= i1; ++i) {
+      for (let j = j0; j <= j1; ++j) {
+        coords.push([i, j]);
+      }
+    }
+
+    const queries = coords.map(([i, j]) => mc.query(this.tileQuery(tileExtent(i, j))));
+    const tiles = await Promise.all(queries);
+    coords.forEach((c, idx) => {
+      this.tileCache.set(`${key}:${c.join(',')}`, tiles[idx]);
+    });
+    this._precomputed.add(key);
+  }
+
   async requestTiles() {
     // get coordinator, cancel prior prefetch queries
     const mc = coordinator();
     if (this.prefetch) mc.cancel(this.prefetch);
 
+    const [m, n] = this.bins = this.binDimensions();
+    await this.precomputeAllTiles([m, n]);
+
     // get view extent info
     const { pad, tileX, tileY, origin: [tx, ty] } = this;
-    const [m, n] = this.bins = this.binDimensions();
     const [x0, x1] = extentX(this, this._filter);
     const [y0, y1] = extentY(this, this._filter);
     const xspan = x1 - x0;
@@ -131,9 +174,20 @@ export class RasterTileMark extends Grid2DMark {
         coords.push([i, j]);
       }
     }
-    const queries = coords.map(
-      ([i, j]) => mc.query(this.tileQuery(tileExtent(i, j)))
-    );
+    const levelKey = `${m}x${n}`;
+    const tilePromises = coords.map(([i, j]) => {
+      const key = `${levelKey}:${i},${j}`;
+      if (this.tileCache.has(key)) {
+        return this.tileCache.get(key);
+      } else {
+        const q = mc.query(this.tileQuery(tileExtent(i, j))).then(res => {
+          this.tileCache.set(key, res);
+          return res;
+        });
+        this.tileCache.set(key, q);
+        return q;
+      }
+    });
 
     // prefetch tiles along periphery of current tiles
     const prefetchCoords = [];
@@ -156,10 +210,14 @@ export class RasterTileMark extends Grid2DMark {
     );
 
     // wait for tile queries to complete, then update
-    const tiles = await Promise.all(queries);
+    const tiles = await Promise.all(tilePromises);
     const density = processTiles(m, n, xx, yy, coords, tiles);
+    // numRows should reflect the number of raster groups. Currently
+    // raster tiles do not support grouping, so we default to one group.
+    // If grouping is added in the future, update this logic to use the
+    // actual group count of the returned tiles.
     this.grids0 = {
-      numRows: density.length,
+      numRows: 1,
       columns: { density: [density] }
     };
     this.convolve().update();
