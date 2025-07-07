@@ -10,6 +10,12 @@ export {
 } from '@uwdata/mosaic-plot';
 
 export {
+  DeckGLScatterplotMark,
+  DeckGLPlot
+} from '@uwdata/mosaic-plot';
+export { initializeDeckGL } from './deckgl.js';
+
+export {
   Query,
   sql,
   column,
@@ -327,6 +333,7 @@ export {
   vector, vectorX, vectorY, spike,
   voronoi, voronoiMesh, delaunayLink, delaunayMesh, hull,
   arrow, link,
+  deckglScatterplot,
   frame,
   axisX, axisY, axisFx, axisFy,
   gridX, gridY, gridFx, gridFy,
