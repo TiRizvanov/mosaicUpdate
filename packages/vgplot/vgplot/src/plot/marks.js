@@ -12,6 +12,7 @@ import {
   RasterMark,
   RasterTileMark,
   RegressionMark,
+  DeckGLScatterplotMark,
 } from '@uwdata/mosaic-plot';
 
 const decorators = new Set([
@@ -29,6 +30,8 @@ function mark(type, data, channels = {}) {
   }
   const MarkClass = type.startsWith('area') || type.startsWith('line')
     ? ConnectedMark
+    : type === 'deckgl-scatterplot'
+    ? DeckGLScatterplotMark
     : Mark;
 
   return explicitType(MarkClass, type, data, channels);
@@ -114,6 +117,7 @@ export const hull = (...args) => mark('hull', ...args);
 
 export const arrow = (...args) => mark('arrow', ...args);
 export const link = (...args) => mark('link', ...args);
+export const deckglScatterplot = (...args) => mark('deckgl-scatterplot', ...args);
 
 export const frame = (...args) => mark('frame', ...args);
 

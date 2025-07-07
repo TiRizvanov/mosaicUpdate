@@ -15,6 +15,11 @@ export { HexbinMark } from './marks/HexbinMark.js';
 export { RasterMark, HeatmapMark } from './marks/RasterMark.js';
 export { RasterTileMark } from './marks/RasterTileMark.js';
 export { RegressionMark } from './marks/RegressionMark.js';
+export { DeckGLScatterplotMark } from './marks/DeckGLScatterplotMark.js';
+
+// deck.gl
+export { DeckGLRenderer } from './DeckGLRenderer.js';
+export { DeckGLPlot } from './DeckGLPlot.js';
 
 // interactors
 export { Highlight } from './interactors/Highlight.js';

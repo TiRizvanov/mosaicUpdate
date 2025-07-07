@@ -14,6 +14,7 @@ import { Geo, Graticule, Sphere } from './marks/Geo.js';
 import { Hexbin } from './marks/Hexbin.js';
 import { Hexgrid } from './marks/Hexgrid.js';
 import { Image } from './marks/Image.js';
+import { DeckGLScatterplot } from './marks/DeckGLScatterplot.js';
 import { Line, LineX, LineY } from './marks/Line.js';
 import { Link } from './marks/Link.js';
 import { Heatmap, Raster, RasterTile } from './marks/Raster.js';
@@ -52,4 +53,5 @@ export type PlotMark =
   | Text | TextX | TextY
   | TickX | TickY
   | Vector | VectorX | VectorY | Spike
-  | WaffleX | WaffleY;
+  | WaffleX | WaffleY
+  | DeckGLScatterplot;
